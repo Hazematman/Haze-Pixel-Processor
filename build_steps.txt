@@ -1,0 +1,5 @@
+yosys -ql out.log  -p 'synth_ice40 -top top -json out.json' top_ice40.sv hpu.sv vga.sv
+nextpnr-ice40 --up5k   --json out.json --pcf icebreaker.pcf --asc out.asc
+icetime  -d up5k -mtr out.rpt out.asc
+icepack out.asc out.bin
+iceprog out.bin
