@@ -5,6 +5,8 @@ input [9:0] current_line,
 input [9:0] current_column,
 input [9:0] true_line,
 input [9:0] true_column,
+input [7:0] x_offset,
+input [7:0] y_offset,
 output [4:0] tile_pixel_out,
 output [15:0] addr_out,
 input [7:0] data_in
@@ -12,8 +14,8 @@ input [7:0] data_in
 
 `define TILE_OFFSET 16'h0
 `define NAMETABLE_OFFSET 16'h1800
-`define ATTR_OFFSET 16'h1bc0
-`define PALETTE_OFFSET 16'h1cb0
+`define ATTR_OFFSET 16'h2700
+`define PALETTE_OFFSET 16'h2ac0
 
 logic [4:0] pixel_out;
 logic [15:0] addr;
@@ -62,7 +64,7 @@ assign tile_y = current_line[7:3];
 assign next_column_p8 = (current_column + 8) < 256;
 
 assign next_tile_x = next_column_p8 ? (tile_x + 1) : 0;
-assign next_tile_y = (next_column_p8 || true_line[3:0] != 4'b1111) ? tile_y : ((tile_y + 1) < 30 ? (tile_y + 1) : 0);
+assign next_tile_y = (next_column_p8 || true_line[3:0] != 4'b1111) ? tile_y : ((tile_y + 1) < 60 ? (tile_y + 1) : 0);
 
 assign current_y = current_line[2:0];
 assign current_x = current_column[2:0];
@@ -136,11 +138,11 @@ always @(posedge clk or posedge reset) begin
                 end
             end
             state_read_bg: begin
-                addr <= `NAMETABLE_OFFSET + (({11'd0,next_tile_y} << 5) + {11'd0,next_tile_x});
+                addr <= `NAMETABLE_OFFSET + (({11'd0,next_tile_y} << 6) + {11'd0,next_tile_x});
                 state <= state_read_attr;
             end
             state_read_attr: begin
-                addr <= `ATTR_OFFSET + (({11'd0, next_tile_y} << 3) + ({11'd0, next_tile_x} >> 2));
+                addr <= `ATTR_OFFSET + (({11'd0, next_tile_y} << 4) + ({11'd0, next_tile_x} >> 2));
                 bg_buffer <= data;
                 line_addr_buffer <= ({8'd0,data} << 4);
                 state <= state_calc_1;

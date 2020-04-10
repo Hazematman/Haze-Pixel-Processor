@@ -76,12 +76,12 @@ int main(int argc, char *argv[])
     for(int i = 0; i < 4; i++)
     {
         uint64_t val = 0;
-        val |= (uint64_t)vram[0x1cb0 + i*6 + 0] << 0;
-        val |= (uint64_t)vram[0x1cb0 + i*6 + 1] << 8;
-        val |= (uint64_t)vram[0x1cb0 + i*6 + 2] << 16;
-        val |= (uint64_t)vram[0x1cb0 + i*6 + 3] << 24;
-        val |= (uint64_t)vram[0x1cb0 + i*6 + 4] << 32;
-        val |= (uint64_t)vram[0x1cb0 + i*6 + 5] << 40;
+        val |= (uint64_t)vram[0x2ac0 + i*6 + 0] << 0;
+        val |= (uint64_t)vram[0x2ac0 + i*6 + 1] << 8;
+        val |= (uint64_t)vram[0x2ac0 + i*6 + 2] << 16;
+        val |= (uint64_t)vram[0x2ac0 + i*6 + 3] << 24;
+        val |= (uint64_t)vram[0x2ac0 + i*6 + 4] << 32;
+        val |= (uint64_t)vram[0x2ac0 + i*6 + 5] << 40;
         top->palettes[i] = val;
     }
     

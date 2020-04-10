@@ -8,6 +8,8 @@ output [7:0] g_out,
 output [7:0] b_out,
 output [15:0] addr_out,
 input [7:0] data_in,
+input [7:0] x_offset,
+input [7:0] y_offset,
 input [47:0] palettes [3:0],
 output [4:0] pix_out
 );
@@ -69,6 +71,8 @@ hpu hpu_core(
 .current_column({1'd0,x[9:1]}),
 .true_line(y),
 .true_column(x),
+.x_offset(x_offset),
+.y_offset(y_offset),
 .tile_pixel_out(pixel_out),
 .addr_out(addr),
 .data_in(data)

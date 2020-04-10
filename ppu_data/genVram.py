@@ -5,8 +5,8 @@ from PIL import Image
 TILE_SIZE = 256*24
 TILE_OFFSET = 0
 NAMETABLE_OFFSET = TILE_OFFSET + TILE_SIZE
-NAMETABLE_SIZE = 32*30 + (32*30)//4
-ATTR_OFFSET = TILE_OFFSET + TILE_SIZE + 32*30
+NAMETABLE_SIZE = 64*60 + (64*60)//4
+ATTR_OFFSET = TILE_OFFSET + TILE_SIZE + 64*60
 PALETTE_OFFSET = NAMETABLE_OFFSET + NAMETABLE_SIZE
 PALETTE_SIZE = 20
 
@@ -44,10 +44,10 @@ def write_palettes(palettes, vram):
     return
 
 def write_screen(screen_indexes, tile_map_attrib, vram):
-    for i in range(32*30):
+    for i in range(64*60):
         index = screen_indexes[i]
         vram[NAMETABLE_OFFSET + i] = index
-        vram[NAMETABLE_OFFSET + 32*30 + i//4] |= (tile_map_attrib[index] << ((i % 4)*2))
+        vram[NAMETABLE_OFFSET + 64*60 + i//4] |= (tile_map_attrib[index] << ((i % 4)*2))
 
 def main():
     vram = [0]*(64*1024)
@@ -111,8 +111,8 @@ def main():
     screen_image = Image.open("screen.png")
     screen_pixels = screen_image.load()
     
-    for y in range(30):
-        for x in range(32):
+    for y in range(60):
+        for x in range(64):
             tile = []
             for yy in range(8):
                 for xx in range(8):
