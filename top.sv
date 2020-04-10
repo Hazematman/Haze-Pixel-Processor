@@ -67,8 +67,6 @@ end
 hpu hpu_core(
 .clk(clk),
 .reset(reset),
-.current_line({1'd0,y[9:1]}),
-.current_column({1'd0,x[9:1]}),
 .true_line(y),
 .true_column(x),
 .x_offset(x_offset),

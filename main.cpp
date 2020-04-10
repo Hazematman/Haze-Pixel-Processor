@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     SDL_Window *win = SDL_CreateWindow("HPU",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       640*2, 480*2, 0);
+                                       640, 480, 0);
 
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 
@@ -122,6 +122,9 @@ int main(int argc, char *argv[])
                 p->a = 255;
             }
         }
+        
+                    
+        top->x_offset += 8;
         
                     
         SDL_UpdateTexture(t, NULL, pixels, XSIZE*sizeof(Pixel));
