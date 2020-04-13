@@ -9,7 +9,7 @@ using namespace std;
 #define YSIZE 480
 
 #define FULL_X 800
-#define FULL_y 525
+#define FULL_Y 525
 
 typedef struct Pixel {
     uint8_t a;
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     SDL_Window *win = SDL_CreateWindow("HPU",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       640, 480, 0);
+                                       640*2, 480*2, 0);
 
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
             }
         }
         
-        for(int i=0; i < FULL_X * FULL_y; i++)
+        for(int i=0; i < FULL_X * FULL_Y; i++)
         {
             /* Flip clock */
             top->clk = 1;
@@ -121,10 +121,11 @@ int main(int argc, char *argv[])
                 p->b = top->b_out;
                 p->a = 255;
             }
+            
+            if(top->line == YSIZE && top->column == XSIZE) {
+                    top->x_offset += 1;
+            }
         }
-        
-                    
-        top->x_offset += 8;
         
                     
         SDL_UpdateTexture(t, NULL, pixels, XSIZE*sizeof(Pixel));

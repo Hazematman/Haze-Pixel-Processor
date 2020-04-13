@@ -25,6 +25,7 @@ logic [4:0] pixel_out;
 logic [15:0] addr;
 logic [7:0] data;
 logic [3:0] cycle_counter;
+logic [3:0] cycle_check;
 logic [5:0] tile_x;
 logic [5:0] tile_y;
 logic [2:0] current_x;
@@ -73,7 +74,7 @@ assign data = data_in;
 assign tile_x = current_column[8:3];
 assign tile_y = current_line[8:3];
 
-assign next_column_p8 = (true_column + 16) < 512;
+assign next_column_p8 = (current_true_column + 8) < (400-16);
 
 /* This handles if we are at the end of the line */
 assign next_tile_x = next_column_p8 ? (tile_x + 1) : {1'd0, x_offset[7:3]};
@@ -86,8 +87,10 @@ assign current_x = current_column[2:0];
 
 assign next_y = (next_column_p8 || true_line[0] == 0) ? current_y : current_y + 1;
 
-assign next_pixel = ((current_true_column + 1) < 400) ? (current_column + 1) : 0;
+assign next_pixel = ((current_true_column + 1) < 400) ? (current_column + 1) : {2'd0, x_offset};
 assign next_pixel_tile_x = next_pixel[8:3];
+
+assign cycle_check = 5 - (x_offset[3:0]<<1);
 
 always @(next_pixel_tile_x or attr_buffer[1]) begin
     case(next_pixel_tile_x[1:0])
@@ -148,7 +151,7 @@ always @(posedge clk or posedge reset) begin
     else begin
         case(state)
             state_wait: begin
-                if(cycle_counter == 5) begin
+                if(cycle_counter == cycle_check) begin
                     state <= state_read_bg;
                 end
             end
