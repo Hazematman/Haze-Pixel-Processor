@@ -42,8 +42,7 @@ logic [5:0] next_tile_y;
 logic [2:0] next_y;
 logic [5:0] next_pixel_tile_x;
 logic [9:0] next_pixel;
-logic [4:0] add_factor;
-logic add_factor_2;
+logic add_factor;
 
 logic [15:0] line_addr_buffer;
 
@@ -76,12 +75,12 @@ assign data = data_in;
 assign tile_x = current_column[8:3];
 assign tile_y = current_line[8:3];
 
-assign add_factor_2 = x_offset[2:0] > 0 && ((current_true_column+x_offset[2:0]) > (400) || current_true_column[9:3] == 0) ? 1 : 0;
+assign add_factor = x_offset[2:0] > 0 && ((current_true_column+{7'd0, x_offset[2:0]}) > (400) || current_true_column[9:3] == 0) ? 1 : 0;
 
 assign next_column_p8 = (current_true_column + 8) < (400-32);
 
 /* This handles if we are at the end of the line */
-assign next_tile_x = next_column_p8 ? (tile_x + 1) : ({1'd0, x_offset[7:3]} + add_factor_2);
+assign next_tile_x = next_column_p8 ? (tile_x + 1) : ({1'd0, x_offset[7:3]} + {5'd0, add_factor});
 
 /* This handles if we are at the end of the screen */
 assign next_tile_y = (next_column_p8 || true_line[3:0] != 4'b1111) ? tile_y : ((tile_y + 1) < 60 ? (tile_y + 1) : 0);
@@ -91,9 +90,6 @@ assign current_x = current_column[2:0];
 
 assign next_y = (next_column_p8 || true_line[0] == 0) ? current_y : current_y + 1;
 
-
-assign add_factor = x_offset[2:0] > 0 && (current_true_column > (400-16) || current_true_column[9:3] == 0) ? 5'd16 : 5'd1;
-//assign next_pixel = (next_column_p8 ? (current_column) : {2'd0, x_offset}) + {5'd0, add_factor};
 assign next_pixel = ((current_true_column + 1) < 400) ? (current_column + 1) : {2'd0, x_offset};
 assign next_pixel_tile_x = next_pixel[8:3];
 
