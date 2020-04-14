@@ -42,6 +42,8 @@ logic [5:0] next_tile_y;
 logic [2:0] next_y;
 logic [5:0] next_pixel_tile_x;
 logic [9:0] next_pixel;
+logic [4:0] add_factor;
+logic add_factor_2;
 
 logic [15:0] line_addr_buffer;
 
@@ -74,10 +76,12 @@ assign data = data_in;
 assign tile_x = current_column[8:3];
 assign tile_y = current_line[8:3];
 
-assign next_column_p8 = (current_true_column + 8) < (400-16);
+assign add_factor_2 = x_offset[2:0] > 0 && ((current_true_column+x_offset[2:0]) > (400) || current_true_column[9:3] == 0) ? 1 : 0;
+
+assign next_column_p8 = (current_true_column + 8) < (400-32);
 
 /* This handles if we are at the end of the line */
-assign next_tile_x = next_column_p8 ? (tile_x + 1) : {1'd0, x_offset[7:3]};
+assign next_tile_x = next_column_p8 ? (tile_x + 1) : ({1'd0, x_offset[7:3]} + add_factor_2);
 
 /* This handles if we are at the end of the screen */
 assign next_tile_y = (next_column_p8 || true_line[3:0] != 4'b1111) ? tile_y : ((tile_y + 1) < 60 ? (tile_y + 1) : 0);
@@ -87,6 +91,9 @@ assign current_x = current_column[2:0];
 
 assign next_y = (next_column_p8 || true_line[0] == 0) ? current_y : current_y + 1;
 
+
+assign add_factor = x_offset[2:0] > 0 && (current_true_column > (400-16) || current_true_column[9:3] == 0) ? 5'd16 : 5'd1;
+//assign next_pixel = (next_column_p8 ? (current_column) : {2'd0, x_offset}) + {5'd0, add_factor};
 assign next_pixel = ((current_true_column + 1) < 400) ? (current_column + 1) : {2'd0, x_offset};
 assign next_pixel_tile_x = next_pixel[8:3];
 
@@ -166,6 +173,7 @@ always @(posedge clk or posedge reset) begin
                 state <= state_calc_1;
             end
             state_calc_1: begin
+                attr_buffer[0] <= data;
                 line_addr_buffer <= line_addr_buffer + ({8'd0,bg_buffer} << 3);
                 state <= state_calc_2;
             end
@@ -178,17 +186,16 @@ always @(posedge clk or posedge reset) begin
                 state <= state_read_pixel_1;
             end
             state_read_pixel_1: begin
-                addr <= `TILE_OFFSET | line_addr_buffer;
-                attr_buffer[0] <= data;
+                addr <= `TILE_OFFSET + line_addr_buffer;
                 state <= state_read_pixel_2;
             end
             state_read_pixel_2: begin
-                addr <= `TILE_OFFSET | line_addr_buffer + 1;
+                addr <= `TILE_OFFSET + line_addr_buffer + 1;
                 line_cache[7:0] <= data;
                 state <= state_read_pixel_3;
             end
             state_read_pixel_3: begin
-                addr <= `TILE_OFFSET | line_addr_buffer + 2;
+                addr <= `TILE_OFFSET + line_addr_buffer + 2;
                 line_cache[15:8] <= data;
                 state <= state_done;
             end
