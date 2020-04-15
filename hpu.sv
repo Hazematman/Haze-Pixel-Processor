@@ -83,12 +83,14 @@ assign next_column_p8 = (current_true_column + 8) < (400-32);
 assign next_tile_x = next_column_p8 ? (tile_x + 1) : ({1'd0, x_offset[7:3]} + {5'd0, add_factor});
 
 /* This handles if we are at the end of the screen */
-assign next_tile_y = (next_column_p8 || true_line[3:0] != 4'b1111) ? tile_y : ((tile_y + 1) < 60 ? (tile_y + 1) : 0);
+assign next_tile_y = (true_line) > 520 ? {1'd0, y_offset[7:3]} : ((next_column_p8 || true_line[3:0] != (4'b1111 - {y_offset[2:0], 1'd0})) ? tile_y : tile_y + 1);
+
+
 
 assign current_y = current_line[2:0];
 assign current_x = current_column[2:0];
 
-assign next_y = (next_column_p8 || true_line[0] == 0) ? current_y : current_y + 1;
+assign next_y = (true_line) > 520 ? y_offset[2:0] : ((next_column_p8 || true_line[0] == 0) ? current_y : current_y + 1);
 
 assign next_pixel = ((current_true_column + 1) < 400) ? (current_column + 1) : {2'd0, x_offset};
 assign next_pixel_tile_x = next_pixel[8:3];

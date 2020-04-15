@@ -124,6 +124,7 @@ int main(int argc, char *argv[])
             
             if(top->line == YSIZE && top->column == XSIZE) {
                     top->x_offset += 1;
+                    top->y_offset += 1;
             }
         }
         
