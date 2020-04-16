@@ -85,8 +85,6 @@ assign next_tile_x = next_column_p8 ? (tile_x + 1) : ({1'd0, x_offset[7:3]} + {5
 /* This handles if we are at the end of the screen */
 assign next_tile_y = (true_line) > 520 ? {1'd0, y_offset[7:3]} : ((next_column_p8 || true_line[3:0] != (4'b1111 - {y_offset[2:0], 1'd0})) ? tile_y : tile_y + 1);
 
-
-
 assign current_y = current_line[2:0];
 assign current_x = current_column[2:0];
 
