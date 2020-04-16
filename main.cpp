@@ -5,6 +5,9 @@
 #include <stdio.h>
 using namespace std;
 
+/* Undef main for SDL2 on windows */
+#undef main
+
 #define XSIZE 640
 #define YSIZE 480
 
@@ -123,7 +126,7 @@ int main(int argc, char *argv[])
             }
             
             if(top->line == YSIZE && top->column == XSIZE) {
-                    top->x_offset += 1;
+                    //top->x_offset += 1;
                     top->y_offset += 1;
             }
         }
