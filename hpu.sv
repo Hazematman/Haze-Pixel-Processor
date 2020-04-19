@@ -7,14 +7,14 @@ input [7:0] x_offset,
 input [7:0] y_offset,
 output [4:0] tile_pixel_out,
 output [15:0] addr_out,
-input [7:0] data_in
+input [7:0] data_in,
+input [31:0] sprite_data[63:0]
 );
 
 `define TILE_OFFSET 16'h0
 `define NAMETABLE_OFFSET 16'h1800
 `define ATTR_OFFSET 16'h2700
 `define PALETTE_OFFSET 16'h2ac0
-
 
 logic [9:0] current_line;
 logic [9:0] current_column;
@@ -47,6 +47,13 @@ logic add_factor;
 logic [15:0] line_addr_buffer;
 
 logic next_column_p8;
+
+logic [1:0] sprites_palette [31:0];
+logic [7:0] sprites_on_line [31:0];
+logic [7:0] sprite_start_x [31:0];
+logic [24:0] sprite_tile_data [31:0];
+logic [5:0] current_sprite;
+logic [4:0] sprite_slot;
     
 enum {
 state_wait, 
@@ -59,6 +66,11 @@ state_read_pixel_1,
 state_read_pixel_2,
 state_read_pixel_3,
 state_done } state;
+
+enum {
+    state_sprite_wait,
+    state_sprite_check,
+    state_sprite_done } sprite_state;
 
 
 assign offset_line = true_line + {1'd0, y_offset[7:0], 1'd0};
@@ -140,6 +152,36 @@ always @(posedge clk or posedge reset) begin
     end
 end
 
+genvar i;
+always @(posedge clk or posedge reset) begin
+    if(reset) begin
+        sprite_state <= state_sprite_wait;
+        current_sprite <= 0;
+        sprite_slot <= 0;
+        for(i=0; i < 32; i++) begin
+            sprite_tile_data[i] <= 0;
+            sprites_on_line[i] <= 0;
+            sprite_start_x[i] <= 0;
+            sprites_palette[i] <= 0;
+        end
+    end
+    else begin
+        current_sprite <= current_sprite + 1;
+        case(sprite_state)
+            state_sprite_wait: begin
+                if(true_column == 0 && true_line[0] == 0) begin
+                    sprite_state <= state_sprite_check;
+                end
+            end
+            state_sprite_check: begin
+                if(sprite_on_line) begin
+                    sprites_on_line[sprite_slot] <= sprite_data[current_sprite][15:8];
+                    sprites_palette[sprite_slot] <= sprite_data[current_sprite][17:16];
+                end
+            end
+        endcase
+    end
+end
 
 always @(posedge clk or posedge reset) begin
     if(reset) begin

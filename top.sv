@@ -11,7 +11,8 @@ input [7:0] data_in,
 input [7:0] x_offset,
 input [7:0] y_offset,
 input [47:0] palettes [3:0],
-output [4:0] pix_out
+output [4:0] pix_out,
+input [31:0] sprite_data[63:0]
 );
 
 logic hsync;
@@ -73,7 +74,8 @@ hpu hpu_core(
 .y_offset(y_offset),
 .tile_pixel_out(pixel_out),
 .addr_out(addr),
-.data_in(data)
+.data_in(data),
+.sprite_data(sprite_data)
 );
 
 vga vga_core(
