@@ -64,7 +64,7 @@ always @(pixel_out) begin
     endcase
 end
 
-hpu hpu_core(
+hpu_tile hpu_core(
 .clk(clk),
 .reset(reset),
 .true_line(y),
