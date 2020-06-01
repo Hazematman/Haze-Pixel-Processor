@@ -11,7 +11,6 @@ input [7:0] data_in
 
 logic [4:0] tile_pixel_out;
 
-
 hpu_tile tile_core(
 .clk(clk),
 .reset(reset),
