@@ -23,12 +23,13 @@ logic [(`NUM_SPRITE_ENGINES-1):0] valid_bits;
 logic [23:0] sprite_line_bufs[`NUM_SPRITE_ENGINES-1:0];
 logic [2:0] sprite_out_colors[`NUM_SPRITE_ENGINES-1:0];
 
-logic [4:0] valid_sprite;
+logic no_sprite;
+logic [3:0] valid_sprite;
 
 assign current_column = {1'b0, true_column[9:1]};
 assign current_line = {1'b0, true_line[9:1]};
 
-clz determine_valid_sprite(.value(valid_bits), .out(valid_sprite));
+clz determine_valid_sprite(.value(valid_bits), .out({no_sprite, valid_sprite}));
 
 genvar i;
 generate
