@@ -6,10 +6,18 @@ input [9:0] true_column,
 input [7:0] x_offset,
 input [7:0] y_offset,
 output [15:0] addr_out,
+output [2:0] hpu_pixel_out,
+output [1:0] hpu_pallet_out,
 input [7:0] data_in
 );
 
 `define NUM_SPRITE_ENGINES 16
+
+logic [2:0] pixel_out;
+logic [1:0] pallet_out;
+
+assign hpu_pixel_out = pixel_out;
+assign hpu_pallet_out = pallet_out;
 
 logic [4:0] tile_pixel_out;
 
@@ -30,6 +38,17 @@ assign current_column = {1'b0, true_column[9:1]};
 assign current_line = {1'b0, true_line[9:1]};
 
 clz determine_valid_sprite(.value(valid_bits), .out({no_sprite, valid_sprite}));
+
+
+always @* begin
+    if(no_sprite) begin
+        pixel_out = tile_pixel_out[2:0];
+        pallet_out = tile_pixel_out[4:3];
+    end else begin
+        pixel_out = sprite_out_colors[valid_sprite];
+        pallet_out = sprite_pallets[valid_sprite];
+    end
+end
 
 genvar i;
 generate
